@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        framework: [Auth, Functions, PostgREST, Realtime, Storage, Supabase, CCryptoBoringSSL, CCryptoBoringSSLShims, Clocks, ConcurrencyExtras, Crypto, CryptoBoringWrapper, CustomDump, HTTPTypes, Helpers, InlineSnapshotTesting, Mocker, SnapshotTesting, SnapshotTestingCustomDump, SwiftBasicFormat, SwiftDiagnostics, SwiftParser, SwiftParserDiagnostics, SwiftSyntax, SwiftSyntax509, SwiftSyntax 510, SwiftSyntax600, SwiftSyntaxBuilder, TestHelpers, XCTestDynamicOverlay, _SwiftSyntaxCShims]
+        framework: [Auth, Functions, PostgREST, Realtime, Storage, Supabase, CCryptoBoringSSL, CCryptoBoringSSLShims, Clocks, ConcurrencyExtras, Crypto, CryptoBoringWrapper, CustomDump, HTTPTypes, Helpers, IssueReporting, Mocker, SwiftBasicFormat, SwiftDiagnostics, SwiftParser, SwiftParserDiagnostics, SwiftSyntax, SwiftSyntax509, SwiftSyntax 510, SwiftSyntax600, SwiftSyntaxBuilder, TestHelpers, XCTestDynamicOverlay, _SwiftSyntaxCShims]
 
     steps:
       - uses: actions/checkout@v4
