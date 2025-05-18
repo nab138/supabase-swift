@@ -18,11 +18,14 @@ jobs:
       - name: Build Framework (Release, iOS)
         run: |
           xcodebuild -scheme Supabase -sdk iphoneos -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/SupabaseSwift.xcarchive archive
-          xcodebuild -exportArchive -archivePath $PWD/build/SupabaseSwift.xcarchive -exportOptionsPlist ExportOptions.plist -exportPath $PWD/build
-
+      
+      - name: Copy Framework from Archive
+        run: |
+          mkdir -p output
+          cp -R build/SupabaseSwift.xcarchive/Products/Library/Frameworks/Supabase.framework output/
+      
       - name: Upload Framework Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: SupabaseSwift.framework
-          path: |
-            build/SupabaseSwift.framework
+          name: Supabase.framework
+          path: output/Supabase.framework
