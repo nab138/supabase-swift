@@ -11,22 +11,23 @@ jobs:
 
     strategy:
       matrix:
-        framework: [Supabase] #, Auth, Functions, PostgREST, Realtime, Storage]
+        framework: [Supabase , Auth, Functions, PostgREST, Realtime, Storage, Helpers, Crypto, ConcurrencyExtras, HTTPTypes]
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
-
-      - name: Set Xcode to 16.2
-        run: sudo xcode-select -s /Applications/Xcode_16.2.app
+      - name: Install create-xcframework
+        run: |
+          git clone https://github.com/mackoj/swift-create-xcframework/ -b bump/swift5.10
+          cd swift-create-xcframework
+          make install
+      
 
       - name: Build ${{ matrix.framework }}.framework (Release, iOS)
-        run: bash build_framework.sh ${{ matrix.framework }}
+        run: swift create-xcframework --platform ios ${{ matrix.framework }} --xc-setting OTHER_SWIFT_FLAGS="-package-name xctest-dynamic-overlay" --xc-setting IPHONEOS_DEPLOYMENT_TARGET=17.5
 
       - name: Upload ${{ matrix.framework }}.framework artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.framework }}.framework
-          path: build/${{ matrix.framework }}-iphoneos.xcarchive/Products/Library/Frameworks/${{ matrix.framework }}.framework
+          path: ${{ matrix.framework }}.xcframework/ios-arm64/${{ matrix.framework }}.framework
