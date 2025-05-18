@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        framework: [Supabase, Auth, Functions, PostgREST, Realtime, Storage, Helpers]
+        framework: [Supabase, Auth, Functions, PostgREST, Realtime, Storage]
 
     steps:
       - uses: actions/checkout@v4
