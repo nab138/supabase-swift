@@ -19,9 +19,11 @@ let package = Package(
     .library(name: "PostgREST", targets: ["PostgREST"]),
     .library(name: "Realtime", targets: ["Realtime"]),
     .library(name: "Storage", targets: ["Storage"]),
-    .library(
+        .library(
       name: "Supabase",
-      targets: ["Supabase", "Functions", "PostgREST", "Auth", "Realtime", "Storage"]),
+      type: .dynamic, // <-- ADD THIS LINE
+      targets: ["Supabase", "Functions", "PostgREST", "Auth", "Realtime", "Storage"]
+    ),
   ],
   dependencies: [
     .package(url: "https://github.com/apple/swift-crypto.git", "1.0.0"..<"4.0.0"),
