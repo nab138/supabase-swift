@@ -12,16 +12,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: List workspace schemes
+        run: xcodebuild -workspace Supabase.xcworkspace -list
+
       - name: Build Supabase.framework (Release, iOS)
         run: |
-          xcodebuild -workspace Supabase.xcworkspace -scheme Supabase -sdk iphoneos -configuration Release build
+          xcodebuild -workspace Supabase.xcworkspace -scheme Supabase-Package -sdk iphoneos -configuration Release build
 
       - name: Find Supabase.framework path
         id: find_framework
         run: |
-          FRAMEWORK_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Supabase.framework" | head -n 1)
+          FRAMEWORK_PATH=$(find ~/Library/Developer/Xcode/DerivedData -type d -name "Supabase.framework" | grep Release-iphoneos | head -n 1)
           echo "Supabase.framework path: $FRAMEWORK_PATH"
           echo "FRAMEWORK_PATH=$FRAMEWORK_PATH" >> $GITHUB_ENV
+
+      - name: List framework contents
+        run: |
+          ls -R "$FRAMEWORK_PATH"
 
       - name: Upload Supabase.framework artifact
         uses: actions/upload-artifact@v4
