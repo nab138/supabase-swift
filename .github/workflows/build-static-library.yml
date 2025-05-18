@@ -28,4 +28,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Auth.framework
-          path: build/Supabase-iphoneos.xcarchive/Products/Library/Frameworks/Auth.framework
+          path: build/Auth-iphoneos.xcarchive/Products/Library/Frameworks/Auth.framework
