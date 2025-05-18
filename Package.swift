@@ -14,7 +14,7 @@ let package = Package(
     .tvOS(.v13),
   ],
   products: [
-    .library(name: "Auth", targets: ["Auth"]),
+    .library(name: "Auth", type: .dynamic, targets: ["Auth"]),
     .library(name: "Functions", targets: ["Functions"]),
     .library(name: "PostgREST", targets: ["PostgREST"]),
     .library(name: "Realtime", targets: ["Realtime"]),
