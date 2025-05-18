@@ -29,6 +29,8 @@ jobs:
       - name: List framework contents
         run: |
           ls -R "$FRAMEWORK_PATH"
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
 
       - name: Upload Supabase.framework artifact
         uses: actions/upload-artifact@v4
