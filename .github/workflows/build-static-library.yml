@@ -24,11 +24,8 @@ jobs:
       - name: Use Swift 6.0.2 toolchain
         run: echo '/Library/Developer/Toolchains/swift-6.0.2-RELEASE.xctoolchain/usr/bin' >> $GITHUB_PATH
 
-      - name: Check Swift version
-        run: swift --version
-
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
+      - name: Set Xcode to 16.2
+        run: sudo xcode-select -s /Applications/Xcode_16.2.app
 
       - name: Build ${{ matrix.framework }}.framework (Release, iOS)
         run: bash build_framework.sh ${{ matrix.framework }}
