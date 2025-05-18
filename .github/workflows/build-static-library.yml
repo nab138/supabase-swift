@@ -10,8 +10,9 @@ jobs:
     runs-on: macos-latest
 
     strategy:
+      fail-fast: false
       matrix:
-        framework: [Supabase , Auth, Functions, PostgREST, Realtime, Storage, Helpers, Crypto, ConcurrencyExtras, HTTPTypes, Clocks, IssueReporting]
+        framework: [Auth, Functions, PostgREST, Realtime, Storage, Supabase, CCryptoBoringSSL, CCryptoBoringSSLShims, Clocks, ConcurrencyExtras, Crypto, CryptoBoringWrapper, CustomDump, HTTPTypes, Helpers, InlineSnapshotTesting, Mocker, SnapshotTesting, SnapshotTestingCustomDump, SwiftBasicFormat, SwiftDiagnostics, SwiftParser, SwiftParserDiagnostics, SwiftSyntax, SwiftSyntax509, SwiftSyntax 510, SwiftSyntax600, SwiftSyntaxBuilder, TestHelpers, XCTestDynamicOverlay, _SwiftSyntaxCShims]
 
     steps:
       - uses: actions/checkout@v4
