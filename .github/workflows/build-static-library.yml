@@ -1,0 +1,50 @@
+name: Build SupabaseSwift Static Library
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Xcode
+        run: sudo xcode-select -s /Applications/Xcode.app
+
+      - name: Build Static Library (Release, iOS)
+        run: |
+          xcodebuild -scheme Supabase -sdk iphoneos -configuration Release -destination 'generic/platform=iOS' build
+
+      - name: Find built static library
+        id: find_lib
+        run: |
+          set -e
+          LIB_PATH=$(find ~/Library/Developer/Xcode/DerivedData -name "Supabase.a" | head -n 1)
+          echo "LIB_PATH=$LIB_PATH" >> $GITHUB_ENV
+          echo "Library found at: $LIB_PATH"
+
+      - name: Find public headers
+        id: find_headers
+        run: |
+          set -e
+          HEADER_DIR=$(dirname ${{ env.LIB_PATH }})
+          HEADERS=$(find $HEADER_DIR -name "*.h")
+          mkdir -p output/include
+          for h in $HEADERS; do
+            cp "$h" output/include/
+          done
+
+      - name: Copy library
+        run: |
+          mkdir -p output/lib
+          cp "${{ env.LIB_PATH }}" output/lib/
+
+      - name: Upload Static Library and Headers
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-staticlib
+          path: output
