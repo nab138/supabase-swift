@@ -15,10 +15,10 @@ let package = Package(
   ],
   products: [
     .library(name: "Auth", type: .dynamic, targets: ["Auth"]),
-    .library(name: "Functions", targets: ["Functions"]),
-    .library(name: "PostgREST", targets: ["PostgREST"]),
-    .library(name: "Realtime", targets: ["Realtime"]),
-    .library(name: "Storage", targets: ["Storage"]),
+    .library(name: "Functions", type: .dynamic, targets: ["Functions"]),
+    .library(name: "PostgREST", type: .dynamic, targets: ["PostgREST"]),
+    .library(name: "Realtime", type: .dynamic, targets: ["Realtime"]),
+    .library(name: "Storage", type: .dynamic, targets: ["Storage"]),
         .library(
       name: "Supabase",
       type: .dynamic, // <-- ADD THIS LINE
