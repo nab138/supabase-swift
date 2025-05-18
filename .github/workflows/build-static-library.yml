@@ -12,12 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: List workspace schemes
-        run: xcodebuild -workspace Supabase.xcworkspace -list
-
       - name: Build Supabase.framework (Release, iOS)
         run: bash build_framework.sh
-          
+        
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
 
       - name: Upload Supabase.framework artifact
         uses: actions/upload-artifact@v4
