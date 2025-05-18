@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        framework: [Supabase, Auth, Functions, PostgREST, Realtime, Storage]
+        framework: [Supabase] #, Auth, Functions, PostgREST, Realtime, Storage]
 
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +29,9 @@ jobs:
 
       - name: Build ${{ matrix.framework }}.framework (Release, iOS)
         run: bash build_framework.sh ${{ matrix.framework }}
+
+      - name: Setup upterm session
+        uses: lhotari/action-upterm@v1
 
       - name: Upload ${{ matrix.framework }}.framework artifact
         uses: actions/upload-artifact@v4
