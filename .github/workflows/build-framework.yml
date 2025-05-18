@@ -18,21 +18,15 @@ jobs:
       - name: Set up Xcode
         run: sudo xcode-select -s /Applications/Xcode.app
 
-      - name: Build Framework (Release, iOS)
+      - name: Build Framework (Archive, iOS)
         run: |
           xcodebuild -scheme Supabase -sdk iphoneos -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/SupabaseSwift.xcarchive archive
 
-      - name: List archive contents
+      - name: List archive contents (all)
         run: |
-          ls -R build/SupabaseSwift.xcarchive/Products/Library/Frameworks || true
+          ls -R build/SupabaseSwift.xcarchive
 
-      - name: Copy Framework from Archive
+      - name: Build Framework (Regular Build, iOS)
         run: |
-          mkdir -p output
-          cp -R build/SupabaseSwift.xcarchive/Products/Library/Frameworks/Supabase.framework output/
-
-      - name: Upload Framework Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Supabase.framework
-          path: output/Supabase.framework
+          xcodebuild -scheme Supabase -sdk iphoneos -configuration Release -destination 'generic/platform=iOS' build
+          find ~/Library/Developer/Xcode/DerivedData -name Supabase.framework || true
