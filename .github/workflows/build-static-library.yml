@@ -1,4 +1,4 @@
-name: Build and Upload Supabase.framework
+name: Build and Upload Frameworks
 
 on:
   workflow_dispatch:
@@ -9,23 +9,18 @@ jobs:
   build:
     runs-on: macos-latest
 
+    strategy:
+      matrix:
+        framework: [Supabase, Auth, Functions, PostgREST, Realtime, Storage]
+
     steps:
       - uses: actions/checkout@v4
 
-      - name: Build Supabase.framework (Release, iOS)
-        run: bash build_framework.sh Supabase
+      - name: Build ${{ matrix.framework }}.framework (Release, iOS)
+        run: bash build_framework.sh ${{ matrix.framework }}
 
-      - name: Build Auth.framework (Release, iOS)
-        run: bash build_framework.sh Auth
-
-      - name: Upload Supabase.framework artifact
+      - name: Upload ${{ matrix.framework }}.framework artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Supabase.framework
-          path: build/Supabase-iphoneos.xcarchive/Products/Library/Frameworks/Supabase.framework
-
-      - name: Upload Auth.framework artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: Auth.framework
-          path: build/Auth-iphoneos.xcarchive/Products/Library/Frameworks/Auth.framework
+          name: ${{ matrix.framework }}.framework
+          path: build/${{ matrix.framework }}-iphoneos.xcarchive/Products/Library/Frameworks/${{ matrix.framework }}.framework
