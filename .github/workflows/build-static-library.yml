@@ -14,12 +14,9 @@ jobs:
 
       - name: Build Supabase.framework (Release, iOS)
         run: bash build_framework.sh
-        
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
 
       - name: Upload Supabase.framework artifact
         uses: actions/upload-artifact@v4
         with:
           name: Supabase.framework
-          path: build/iphoneos-Supabase.xcarchive/Products/Library/Frameworks/Supabase.framework
+          path: build/Supabase-iphoneos.xcarchive/Products/Library/Frameworks/Supabase.framework
