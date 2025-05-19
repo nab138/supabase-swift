@@ -24,7 +24,7 @@ jobs:
           make install
 
       - name: Build ${{ matrix.framework }}.framework (Release, iOS)
-        run: swift create-xcframework --platform ios ${{ matrix.framework }} --xc-setting OTHER_SWIFT_FLAGS="-package-name xctest-dynamic-overlay" --xc-setting IPHONEOS_DEPLOYMENT_TARGET=17.5 --xc-setting --stack-evolution
+        run: swift create-xcframework --platform ios ${{ matrix.framework }} --xc-setting OTHER_SWIFT_FLAGS="-package-name xctest-dynamic-overlay" --xc-setting IPHONEOS_DEPLOYMENT_TARGET=17.5 --stack-evolution
 
       - name: Upload ${{ matrix.framework }}.framework artifact
         uses: actions/upload-artifact@v4
