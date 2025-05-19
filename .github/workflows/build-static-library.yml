@@ -27,7 +27,7 @@ jobs:
         uses: lhotari/action-upterm@v1
 
       - name: Build ${{ matrix.framework }}.framework (Release, iOS)
-        run: swift create-xcframework --platform ios ${{ matrix.framework }} --xc-setting OTHER_SWIFT_FLAGS="-package-name xctest-dynamic-overlay" --xc-setting IPHONEOS_DEPLOYMENT_TARGET=17.5 --xc-setting BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+        run: swift create-xcframework --platform ios ${{ matrix.framework }} --xc-setting OTHER_SWIFT_FLAGS="-package-name xctest-dynamic-overlay" --xc-setting IPHONEOS_DEPLOYMENT_TARGET=17.5 --xc-setting --stack-evolution
 
       - name: Upload ${{ matrix.framework }}.framework artifact
         uses: actions/upload-artifact@v4
