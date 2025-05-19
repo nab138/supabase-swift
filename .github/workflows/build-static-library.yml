@@ -12,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        framework: [Auth] #, Functions, PostgREST, Realtime, Storage, Supabase, CCryptoBoringSSL, CCryptoBoringSSLShims, Clocks, ConcurrencyExtras, Crypto, CryptoBoringWrapper, CustomDump, HTTPTypes, Helpers, IssueReporting, Mocker, SwiftBasicFormat, SwiftDiagnostics, SwiftParser, SwiftParserDiagnostics, SwiftSyntax, SwiftSyntax509, SwiftSyntax600, SwiftSyntaxBuilder, XCTestDynamicOverlay, _SwiftSyntaxCShims]
+        framework: [Auth, Functions, PostgREST, Realtime, Storage, Supabase, CCryptoBoringSSL, CCryptoBoringSSLShims, Clocks, ConcurrencyExtras, Crypto, CryptoBoringWrapper, CustomDump, HTTPTypes, Helpers, IssueReporting, Mocker, SwiftBasicFormat, SwiftDiagnostics, SwiftParser, SwiftParserDiagnostics, SwiftSyntax, SwiftSyntax509, SwiftSyntax600, SwiftSyntaxBuilder, XCTestDynamicOverlay, _SwiftSyntaxCShims]
 
     steps:
       - uses: actions/checkout@v4
@@ -22,9 +22,6 @@ jobs:
           git clone https://github.com/mackoj/swift-create-xcframework/ -b bump/swift5.10
           cd swift-create-xcframework
           make install
-
-      - name: Setup upterm session
-        uses: lhotari/action-upterm@v1
 
       - name: Build ${{ matrix.framework }}.framework (Release, iOS)
         run: swift create-xcframework --platform ios ${{ matrix.framework }} --xc-setting OTHER_SWIFT_FLAGS="-package-name xctest-dynamic-overlay" --xc-setting IPHONEOS_DEPLOYMENT_TARGET=17.5 --xc-setting --stack-evolution
