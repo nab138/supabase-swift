@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import HTTPTypes
-import Helpers
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -15,18 +13,18 @@ import Helpers
 
 /// Options for initializing ``RealtimeClientV2``.
 public struct RealtimeClientOptions: Sendable {
-  package var headers: HTTPFields
-  var heartbeatInterval: TimeInterval
-  var reconnectDelay: TimeInterval
-  var timeoutInterval: TimeInterval
-  var disconnectOnSessionLoss: Bool
-  var connectOnSubscribe: Bool
+  public var headers: HTTPFields
+  public var heartbeatInterval: TimeInterval
+  public var reconnectDelay: TimeInterval
+  public var timeoutInterval: TimeInterval
+  public var disconnectOnSessionLoss: Bool
+  public var connectOnSubscribe: Bool
 
   /// Sets the log level for Realtime
-  var logLevel: LogLevel?
-  var fetch: (@Sendable (_ request: URLRequest) async throws -> (Data, URLResponse))?
-  package var accessToken: (@Sendable () async throws -> String?)?
-  package var logger: (any SupabaseLogger)?
+  public var logLevel: LogLevel?
+  public var fetch: (@Sendable (_ request: URLRequest) async throws -> (Data, URLResponse))?
+  public var accessToken: (@Sendable () async throws -> String?)?
+  public var logger: (any SupabaseLogger)?
 
   public static let defaultHeartbeatInterval: TimeInterval = 25
   public static let defaultReconnectDelay: TimeInterval = 7
@@ -79,9 +77,9 @@ public enum RealtimeClientStatus: Sendable, CustomStringConvertible {
 
   public var description: String {
     switch self {
-    case .disconnected: "Disconnected"
-    case .connecting: "Connecting"
-    case .connected: "Connected"
+    case .disconnected: return "Disconnected"
+    case .connecting: return "Connecting"
+    case .connected: return "Connected"
     }
   }
 }

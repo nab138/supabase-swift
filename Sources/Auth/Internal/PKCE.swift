@@ -1,5 +1,5 @@
-import Crypto
 import Foundation
+import CryptoKit
 
 struct PKCE {
   var generateCodeVerifier: @Sendable () -> String
@@ -9,18 +9,15 @@ struct PKCE {
 extension PKCE {
   static let live = PKCE(
     generateCodeVerifier: {
-      let buffer = [UInt8].random(count: 64)
+      let buffer = (0..<64).map { _ in UInt8.random(in: 0...255) }
       return Data(buffer).pkceBase64EncodedString()
     },
     generateCodeChallenge: { codeVerifier in
       guard let data = codeVerifier.data(using: .utf8) else {
         preconditionFailure("provided string should be utf8 encoded.")
       }
-
-      var hasher = SHA256()
-      hasher.update(data: data)
-      let hashed = hasher.finalize()
-      return Data(hashed).pkceBase64EncodedString()
+      let hashed = Data(SHA256.hash(data: data))
+      return hashed.pkceBase64EncodedString()
     }
   )
 }

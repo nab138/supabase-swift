@@ -1,5 +1,5 @@
 import Foundation
-import Helpers
+
 
 struct SessionManager: Sendable {
   var session: @Sendable () async throws -> Session
@@ -79,7 +79,7 @@ private actor LiveSessionManager {
           }
 
           let session = try await api.execute(
-            HTTPRequest(
+            SBHTTPRequest(
               url: configuration.url.appendingPathComponent("token"),
               method: .post,
               query: [

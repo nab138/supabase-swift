@@ -5,7 +5,7 @@
 //  Created by Guilherme Souza on 08/03/24.
 //
 
-import ConcurrencyExtras
+
 import Foundation
 
 /// A token for cancelling observations.
@@ -13,13 +13,13 @@ import Foundation
 /// When this token gets deallocated it cancels the observation it was associated with. Store this token in another object to keep the observation alive.
 public final class ObservationToken: @unchecked Sendable, Hashable {
   private let _isCancelled = LockIsolated(false)
-  package var onCancel: @Sendable () -> Void
+  var onCancel: @Sendable () -> Void
 
   public var isCancelled: Bool {
     _isCancelled.withValue { $0 }
   }
 
-  package init(onCancel: @escaping @Sendable () -> Void = {}) {
+  init(onCancel: @escaping @Sendable () -> Void = {}) {
     self.onCancel = onCancel
   }
 
@@ -57,7 +57,7 @@ public final class ObservationToken: @unchecked Sendable, Hashable {
   }
 }
 
-package final class EventEmitter<Event: Sendable>: Sendable {
+final class EventEmitter<Event: Sendable>: Sendable {
   public typealias Listener = @Sendable (Event) -> Void
 
   struct MutableState {
@@ -68,11 +68,11 @@ package final class EventEmitter<Event: Sendable>: Sendable {
   let mutableState: LockIsolated<MutableState>
 
   /// The last event emitted by this Emiter, or the initial event.
-  package var lastEvent: Event { mutableState.lastEvent }
+  var lastEvent: Event { mutableState.lastEvent }
 
-  package let emitsLastEventWhenAttaching: Bool
+  let emitsLastEventWhenAttaching: Bool
 
-  package init(
+  init(
     initialEvent event: Event,
     emitsLastEventWhenAttaching: Bool = true
   ) {
@@ -83,7 +83,7 @@ package final class EventEmitter<Event: Sendable>: Sendable {
   /// Attaches a new listener for observing event emissions.
   ///
   /// If emitter initialized with `emitsLastEventWhenAttaching = true`, listener gets called right away with last event.
-  package func attach(_ listener: @escaping Listener) -> ObservationToken {
+  func attach(_ listener: @escaping Listener) -> ObservationToken {
     defer {
       if emitsLastEventWhenAttaching {
         listener(lastEvent)
@@ -107,7 +107,7 @@ package final class EventEmitter<Event: Sendable>: Sendable {
   }
 
   /// Trigger a new event on all attached listeners, or a specific listener owned by the `token` provided.
-  package func emit(_ event: Event, to token: ObservationToken? = nil) {
+  func emit(_ event: Event, to token: ObservationToken? = nil) {
     let listeners = mutableState.withValue {
       $0.lastEvent = event
       return $0.listeners
@@ -123,7 +123,7 @@ package final class EventEmitter<Event: Sendable>: Sendable {
   }
 
   /// Returns a new ``AsyncStream`` for observing events emitted by this emitter.
-  package func stream() -> AsyncStream<Event> {
+  func stream() -> AsyncStream<Event> {
     AsyncStream { continuation in
       let token = attach { status in
         continuation.yield(status)

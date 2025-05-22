@@ -11,15 +11,15 @@ import Foundation
   import FoundationNetworking
 #endif
 
-package protocol HTTPClientType: Sendable {
-  func send(_ request: HTTPRequest) async throws -> HTTPResponse
+protocol HTTPClientType: Sendable {
+  func send(_ request: SBHTTPRequest) async throws -> SBHTTPResponse
 }
 
-package actor HTTPClient: HTTPClientType {
+actor HTTPClient: HTTPClientType {
   let fetch: @Sendable (URLRequest) async throws -> (Data, URLResponse)
   let interceptors: [any HTTPClientInterceptor]
 
-  package init(
+  init(
     fetch: @escaping @Sendable (URLRequest) async throws -> (Data, URLResponse),
     interceptors: [any HTTPClientInterceptor]
   ) {
@@ -27,14 +27,14 @@ package actor HTTPClient: HTTPClientType {
     self.interceptors = interceptors
   }
 
-  package func send(_ request: HTTPRequest) async throws -> HTTPResponse {
-    var next: @Sendable (HTTPRequest) async throws -> HTTPResponse = { _request in
+  func send(_ request: SBHTTPRequest) async throws -> SBHTTPResponse {
+    var next: @Sendable (SBHTTPRequest) async throws -> SBHTTPResponse = { _request in
       let urlRequest = _request.urlRequest
       let (data, response) = try await self.fetch(urlRequest)
       guard let httpURLResponse = response as? HTTPURLResponse else {
         throw URLError(.badServerResponse)
       }
-      return HTTPResponse(data: data, response: httpURLResponse)
+      return SBHTTPResponse(data: data, response: httpURLResponse)
     }
 
     for interceptor in interceptors.reversed() {
@@ -48,9 +48,9 @@ package actor HTTPClient: HTTPClientType {
   }
 }
 
-package protocol HTTPClientInterceptor: Sendable {
+protocol HTTPClientInterceptor: Sendable {
   func intercept(
-    _ request: HTTPRequest,
-    next: @Sendable (HTTPRequest) async throws -> HTTPResponse
-  ) async throws -> HTTPResponse
+    _ request: SBHTTPRequest,
+    next: @Sendable (SBHTTPRequest) async throws -> SBHTTPResponse
+  ) async throws -> SBHTTPResponse
 }

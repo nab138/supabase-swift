@@ -1,11 +1,11 @@
-import HTTPTypes
+
 
 extension HTTPFields {
-  package init(_ dictionary: [String: String]) {
+  init(_ dictionary: [String: String]) {
     self.init(dictionary.map { .init(name: .init($0.key)!, value: $0.value) })
   }
 
-  package var dictionary: [String: String] {
+  var dictionary: [String: String] {
     let keyValues = self.map {
       ($0.name.rawName, $0.value)
     }
@@ -13,13 +13,13 @@ extension HTTPFields {
     return .init(keyValues, uniquingKeysWith: { $1 })
   }
 
-  package mutating func merge(with other: Self) {
+  mutating func merge(with other: Self) {
     for field in other {
       self[field.name] = field.value
     }
   }
 
-  package func merging(with other: Self) -> Self {
+  func merging(with other: Self) -> Self {
     var copy = self
 
     for field in other {
@@ -40,7 +40,7 @@ extension HTTPFields {
   /// headers.appendOrUpdate(.prefer, value: "return=minimal")
   /// #expect(headers == ["Prefer": "count=exact,return=minimal"]
   /// ```
-  package mutating func appendOrUpdate(
+  mutating func appendOrUpdate(
     _ name: HTTPField.Name,
     value: String,
     separator: String = ","
@@ -64,7 +64,7 @@ extension HTTPFields {
 }
 
 extension HTTPField.Name {
-  package static let xClientInfo = HTTPField.Name("X-Client-Info")!
-  package static let xRegion = HTTPField.Name("x-region")!
-  package static let xRelayError = HTTPField.Name("x-relay-error")!
+  static let xClientInfo = HTTPField.Name("X-Client-Info")!
+  static let xRegion = HTTPField.Name("x-region")!
+  static let xRelayError = HTTPField.Name("x-relay-error")!
 }

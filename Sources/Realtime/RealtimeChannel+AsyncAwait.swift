@@ -10,17 +10,14 @@ import Foundation
 extension RealtimeChannelV2 {
   /// Listen for clients joining / leaving the channel using presences.
   public func presenceChange() -> AsyncStream<any PresenceAction> {
-    let (stream, continuation) = AsyncStream<any PresenceAction>.makeStream()
-
-    let subscription = onPresenceChange {
-      continuation.yield($0)
+    AsyncStream<any PresenceAction> { continuation in
+      let subscription = onPresenceChange {
+        continuation.yield($0)
+      }
+      continuation.onTermination = { @Sendable _ in
+        subscription.cancel()
+      }
     }
-
-    continuation.onTermination = { _ in
-      subscription.cancel()
-    }
-
-    return stream
   }
 
   /// Listen for postgres changes in a channel.
@@ -139,49 +136,43 @@ extension RealtimeChannelV2 {
     table: String?,
     filter: String?
   ) -> AsyncStream<AnyAction> {
-    let (stream, continuation) = AsyncStream<AnyAction>.makeStream()
-    let subscription = _onPostgresChange(
-      event: event,
-      schema: schema,
-      table: table,
-      filter: filter
-    ) {
-      continuation.yield($0)
+    AsyncStream<AnyAction> { continuation in
+      let subscription = _onPostgresChange(
+        event: event,
+        schema: schema,
+        table: table,
+        filter: filter
+      ) {
+        continuation.yield($0)
+      }
+      continuation.onTermination = { @Sendable _ in
+        subscription.cancel()
+      }
     }
-    continuation.onTermination = { _ in
-      subscription.cancel()
-    }
-    return stream
   }
 
   /// Listen for broadcast messages sent by other clients within the same channel under a specific `event`.
   public func broadcastStream(event: String) -> AsyncStream<JSONObject> {
-    let (stream, continuation) = AsyncStream<JSONObject>.makeStream()
-
-    let subscription = onBroadcast(event: event) {
-      continuation.yield($0)
+    AsyncStream<JSONObject> { continuation in
+      let subscription = onBroadcast(event: event) {
+        continuation.yield($0)
+      }
+      continuation.onTermination = { @Sendable _ in
+        subscription.cancel()
+      }
     }
-
-    continuation.onTermination = { _ in
-      subscription.cancel()
-    }
-
-    return stream
   }
   
   /// Listen for `system` event.
   public func system() -> AsyncStream<RealtimeMessageV2> {
-    let (stream, continuation) = AsyncStream<RealtimeMessageV2>.makeStream()
-
-    let subscription = onSystem {
-      continuation.yield($0)
+    AsyncStream<RealtimeMessageV2> { continuation in
+      let subscription = onSystem {
+        continuation.yield($0)
+      }
+      continuation.onTermination = { @Sendable _ in
+        subscription.cancel()
+      }
     }
-
-    continuation.onTermination = { _ in
-      subscription.cancel()
-    }
-
-    return stream
   }
 
   /// Listen for broadcast messages sent by other clients within the same channel under a specific `event`.

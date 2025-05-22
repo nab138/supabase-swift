@@ -10,30 +10,30 @@ import Foundation
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 
-  package let NSEC_PER_SEC: UInt64 = 1000000000
-  package let NSEC_PER_MSEC: UInt64 = 1000000
+  let NSEC_PER_SEC: UInt64 = 1000000000
+  let NSEC_PER_MSEC: UInt64 = 1000000
 #endif
 
 extension Result {
-  package var value: Success? {
+  var value: Success? {
     if case let .success(value) = self {
-      value
+      return value
     } else {
-      nil
+      return nil
     }
   }
 
-  package var error: Failure? {
+  var error: Failure? {
     if case let .failure(error) = self {
-      error
+      return error
     } else {
-      nil
+      return nil
     }
   }
 }
 
 extension URL {
-  package mutating func appendQueryItems(_ queryItems: [URLQueryItem]) {
+  mutating func appendQueryItems(_ queryItems: [URLQueryItem]) {
     guard !queryItems.isEmpty else {
       return
     }
@@ -56,7 +56,7 @@ extension URL {
     }
   }
 
-  package func appendingQueryItems(_ queryItems: [URLQueryItem]) -> URL {
+  func appendingQueryItems(_ queryItems: [URLQueryItem]) -> URL {
     var url = self
     url.appendQueryItems(queryItems)
     return url

@@ -1,19 +1,12 @@
 import Foundation
-import XCTestDynamicOverlay
 
 private let _version = "2.28.0"  // {x-release-please-version}
 
-#if DEBUG
-  package let version = isTesting ? "0.0.0" : _version
-#else
-  package let version = _version
-#endif
+let version = _version
 
 private let _platform: String? = {
   #if os(macOS)
     return "macOS"
-  #elseif os(visionOS)
-    return "visionOS"
   #elseif os(iOS)
     #if targetEnvironment(macCatalyst)
       return "macCatalyst"
@@ -55,14 +48,6 @@ private let _platformVersion: String? = {
   #endif
 }()
 
-#if DEBUG
-  package let platform = isTesting ? "macOS" : _platform
-#else
-  package let platform = _platform
-#endif
+let platform = _platform
 
-#if DEBUG
-  package let platformVersion = isTesting ? "0.0.0" : _platformVersion
-#else
-  package let platformVersion = _platformVersion
-#endif
+let platformVersion = _platformVersion

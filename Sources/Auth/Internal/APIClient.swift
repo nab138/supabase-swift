@@ -1,6 +1,6 @@
 import Foundation
-import Helpers
-import HTTPTypes
+
+
 
 extension HTTPClient {
   init(configuration: AuthClient.Configuration) {
@@ -32,7 +32,7 @@ struct APIClient: Sendable {
     Dependencies[clientID].http
   }
 
-  func execute(_ request: Helpers.HTTPRequest) async throws -> Helpers.HTTPResponse {
+  func execute(_ request: SBHTTPRequest) async throws -> SBHTTPResponse {
     var request = request
     request.headers = HTTPFields(configuration.headers).merging(with: request.headers)
 
@@ -50,7 +50,7 @@ struct APIClient: Sendable {
   }
 
   @discardableResult
-  func authorizedExecute(_ request: Helpers.HTTPRequest) async throws -> Helpers.HTTPResponse {
+  func authorizedExecute(_ request: SBHTTPRequest) async throws -> SBHTTPResponse {
     var sessionManager: SessionManager {
       Dependencies[clientID].sessionManager
     }
@@ -63,7 +63,7 @@ struct APIClient: Sendable {
     return try await execute(request)
   }
 
-  func handleError(response: Helpers.HTTPResponse) -> AuthError {
+  func handleError(response: SBHTTPResponse) -> AuthError {
     guard let error = try? response.decoded(
       as: _RawAPIErrorResponse.self,
       decoder: configuration.decoder
@@ -78,10 +78,11 @@ struct APIClient: Sendable {
 
     let responseAPIVersion = parseResponseAPIVersion(response)
 
-    let errorCode: ErrorCode? = if let responseAPIVersion, responseAPIVersion >= apiVersions[._20240101]!.timestamp, let code = error.code {
-      ErrorCode(code)
+    let errorCode: ErrorCode?
+    if let responseAPIVersion = responseAPIVersion, responseAPIVersion >= apiVersions[._20240101]!.timestamp, let code = error.code {
+        errorCode = ErrorCode(code)
     } else {
-      error.errorCode
+        errorCode = error.errorCode
     }
 
     if errorCode == nil, let weakPassword = error.weakPassword {
@@ -106,7 +107,7 @@ struct APIClient: Sendable {
     }
   }
 
-  private func parseResponseAPIVersion(_ response: Helpers.HTTPResponse) -> Date? {
+  private func parseResponseAPIVersion(_ response: SBHTTPResponse) -> Date? {
     guard let apiVersion = response.headers[.apiVersionHeaderName] else { return nil }
 
     let formatter = ISO8601DateFormatter()

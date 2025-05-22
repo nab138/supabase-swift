@@ -5,11 +5,8 @@
 //  Created by Guilherme Souza on 14/12/23.
 //
 
-import ConcurrencyExtras
-import Foundation
-import Helpers
 
-let version = Helpers.version
+import Foundation
 
 extension PostgrestClient.Configuration {
   /// The default `JSONDecoder` instance for ``PostgrestClient`` responses.

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import HTTPTypes
+
 
 let defaultAuthURL = URL(string: "http://localhost:9999")!
 let defaultExpiryMargin: TimeInterval = 30

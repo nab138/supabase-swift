@@ -5,24 +5,22 @@
 //  Created by Guilherme Souza on 08/01/25.
 //
 
-import Clocks
-import ConcurrencyExtras
 import Foundation
 
-package protocol _Clock: Sendable {
+public protocol _Clock: Sendable {
   func sleep(for duration: TimeInterval) async throws
 }
 
 @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
 extension ContinuousClock: _Clock {
-  package func sleep(for duration: TimeInterval) async throws {
-    try await sleep(for: .seconds(duration))
+  public func sleep(for duration: TimeInterval) async throws {
+    try await sleep(until: .now.advanced(by: .microseconds(Int(duration * 1_000_000))))
   }
 }
 @available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *)
 extension TestClock<Duration>: _Clock {
-  package func sleep(for duration: TimeInterval) async throws {
-    try await sleep(for: .seconds(duration))
+  public func sleep(for duration: TimeInterval) async throws {
+    try await sleep(until: self.now.advanced(by: .microseconds(Int(duration * 1_000_000))))
   }
 }
 
@@ -36,16 +34,16 @@ struct FallbackClock: _Clock {
 // Resolves clock instance based on platform availability.
 let _resolveClock: @Sendable () -> any _Clock = {
   if #available(macOS 13.0, iOS 16.0, watchOS 9.0, tvOS 16.0, *) {
-    ContinuousClock()
+    return ContinuousClock()
   } else {
-    FallbackClock()
+    return FallbackClock()
   }
 }
 
 private let __clock = LockIsolated(_resolveClock())
 
 #if DEBUG
-  package var _clock: any _Clock {
+  public var _clock: any _Clock {
     get {
       __clock.value
     }
@@ -54,7 +52,7 @@ private let __clock = LockIsolated(_resolveClock())
     }
   }
 #else
-  package var _clock: any _Clock {
+  public var _clock: any _Clock {
     __clock.value
   }
 #endif

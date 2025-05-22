@@ -5,15 +5,15 @@
 //  Created by Guilherme Souza on 31/10/24.
 //
 
-import ConcurrencyExtras
+
 import Foundation
 
 /// A thread-safe subject that wraps a single value and provides async access to its updates.
 /// Similar to Combine's CurrentValueSubject, but designed for async/await usage.
-package final class AsyncValueSubject<Value: Sendable>: Sendable {
+final class AsyncValueSubject<Value: Sendable>: Sendable {
 
   /// Defines how values are buffered in the underlying AsyncStream.
-  package typealias BufferingPolicy = AsyncStream<Value>.Continuation.BufferingPolicy
+  typealias BufferingPolicy = AsyncStream<Value>.Continuation.BufferingPolicy
 
   /// Internal state container for the subject.
   struct MutableState {
@@ -30,7 +30,7 @@ package final class AsyncValueSubject<Value: Sendable>: Sendable {
   /// - Parameters:
   ///   - initialValue: The initial value to store
   ///   - bufferingPolicy: Determines how values are buffered in the AsyncStream (defaults to .unbounded)
-  package init(_ initialValue: Value, bufferingPolicy: BufferingPolicy = .unbounded) {
+  init(_ initialValue: Value, bufferingPolicy: BufferingPolicy = .unbounded) {
     self.mutableState = LockIsolated(MutableState(value: initialValue))
     self.bufferingPolicy = UncheckedSendable(bufferingPolicy)
   }
@@ -40,7 +40,7 @@ package final class AsyncValueSubject<Value: Sendable>: Sendable {
   }
 
   /// The current value stored in the subject.
-  package var value: Value {
+  var value: Value {
     mutableState.value
   }
 
@@ -50,7 +50,7 @@ package final class AsyncValueSubject<Value: Sendable>: Sendable {
   /// If nothing is awaiting the next value, this method attempts to buffer the result’s element.
   ///
   /// This can be called more than once and returns to the caller immediately without blocking for any awaiting consumption from the iteration.
-  package func yield(_ value: Value) {
+  func yield(_ value: Value) {
     mutableState.withValue {
       guard !$0.finished else { return }
 
@@ -67,7 +67,7 @@ package final class AsyncValueSubject<Value: Sendable>: Sendable {
   /// Calling this function more than once has no effect. After calling
   /// finish, the stream enters a terminal state and doesn't produce any
   /// additional elements.
-  package func finish() {
+  func finish() {
     mutableState.withValue {
       guard $0.finished == false else { return }
 
@@ -80,7 +80,7 @@ package final class AsyncValueSubject<Value: Sendable>: Sendable {
   }
 
   /// An AsyncStream that emits the current value and all subsequent updates.
-  package var values: AsyncStream<Value> {
+  var values: AsyncStream<Value> {
     AsyncStream(bufferingPolicy: bufferingPolicy.value) { continuation in
       insert(continuation)
     }
@@ -92,7 +92,7 @@ package final class AsyncValueSubject<Value: Sendable>: Sendable {
   ///   - handler: A closure that will be called with each new value
   /// - Returns: A task that can be cancelled to stop observing changes
   @discardableResult
-  package func onChange(
+  func onChange(
     priority: TaskPriority? = nil,
     _ handler: @escaping @Sendable (Value) -> Void
   ) -> Task<Void, Never> {
@@ -130,7 +130,7 @@ package final class AsyncValueSubject<Value: Sendable>: Sendable {
 }
 
 extension AsyncValueSubject where Value == Void {
-  package func yield() {
+  func yield() {
     self.yield(())
   }
 }

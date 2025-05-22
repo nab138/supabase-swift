@@ -8,7 +8,7 @@
 import Foundation
 
 @discardableResult
-package func withTimeout<R: Sendable>(
+func withTimeout<R: Sendable>(
   interval: TimeInterval,
   @_inheritActorContext operation: @escaping @Sendable () async throws -> R
 ) async throws -> R {
@@ -36,4 +36,4 @@ package func withTimeout<R: Sendable>(
   }
 }
 
-package struct TimeoutError: Error, Hashable {}
+struct TimeoutError: Error, Hashable {}

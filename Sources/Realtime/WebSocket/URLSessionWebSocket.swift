@@ -1,4 +1,3 @@
-import ConcurrencyExtras
 import Foundation
 
 #if canImport(FoundationNetworking)
@@ -116,15 +115,15 @@ final class URLSessionWebSocket: WebSocket {
   private func _handleMessage(_ value: URLSessionWebSocketTask.Message) {
     guard !isClosed else { return }
 
-    let event =
-      switch value {
-      case .string(let string):
-        WebSocketEvent.text(string)
-      case .data(let data):
-        WebSocketEvent.binary(data)
-      @unknown default:
-        fatalError("Unsupported message.")
-      }
+    let event: WebSocketEvent
+    switch value {
+    case .string(let string):
+      event = WebSocketEvent.text(string)
+    case .data(let data):
+      event = WebSocketEvent.binary(data)
+    @unknown default:
+      fatalError("Unsupported message.")
+    }
     _trigger(event)
     _scheduleReceive()
   }
@@ -146,13 +145,16 @@ final class URLSessionWebSocket: WebSocket {
       // onWebsocketTaskClosed/onComplete will be invoked and may indicate a close code.
       return
     }
-    let (code, reason) =
-      switch (nsError.domain, nsError.code) {
-      case (NSPOSIXErrorDomain, 100):
-        (1002, nsError.localizedDescription)
-      case (_, _):
-        (1006, nsError.localizedDescription)
-      }
+    let code: Int
+    let reason: String
+    switch (nsError.domain, nsError.code) {
+    case (NSPOSIXErrorDomain, 100):
+      code = 1002
+      reason = nsError.localizedDescription
+    default:
+      code = 1006
+      reason = nsError.localizedDescription
+    }
     _task.cancel()
     _connectionClosed(code: code, reason: Data(reason.utf8))
   }

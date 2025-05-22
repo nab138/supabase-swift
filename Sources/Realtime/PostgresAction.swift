@@ -6,14 +6,14 @@
 //
 
 import Foundation
-import Helpers
+
 
 public struct Column: Equatable, Codable, Sendable {
   public let name: String
   public let type: String
 }
 
-public protocol PostgresAction: Equatable, Sendable {
+public protocol PostgresAction: Sendable {
   static var eventType: PostgresChangeEvent { get }
 }
 
@@ -65,9 +65,9 @@ public enum AnyAction: PostgresAction, HasRawMessage {
 
   var wrappedAction: any PostgresAction & HasRawMessage {
     switch self {
-    case let .insert(action): action
-    case let .update(action): action
-    case let .delete(action): action
+    case let .insert(action): return action
+    case let .update(action): return action
+    case let .delete(action): return action
     }
   }
 

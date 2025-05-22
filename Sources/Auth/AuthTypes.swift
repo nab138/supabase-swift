@@ -1,8 +1,4 @@
 import Foundation
-import Helpers
-
-public typealias AnyJSON = Helpers.AnyJSON
-public typealias JSONObject = Helpers.JSONObject
 
 public enum AuthChangeEvent: String, Sendable {
   case initialSession = "INITIAL_SESSION"
@@ -455,8 +451,8 @@ public enum AuthResponse: Codable, Hashable, Sendable {
 
   public var user: User {
     switch self {
-    case let .session(session): session.user
-    case let .user(user): user
+    case let .session(session): return session.user
+    case let .user(user): return user
     }
   }
 

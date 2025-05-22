@@ -7,8 +7,8 @@
 
 import Foundation
 
-package enum JWT {
-  package static func decodePayload(_ jwt: String) -> [String: Any]? {
+enum JWT {
+  static func decodePayload(_ jwt: String) -> [String: Any]? {
     let parts = jwt.split(separator: ".")
     guard parts.count == 3 else {
       return nil

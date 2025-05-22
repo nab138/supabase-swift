@@ -1,7 +1,6 @@
-import ConcurrencyExtras
 import Foundation
-import Helpers
-import HTTPTypes
+
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -14,7 +13,7 @@ public class PostgrestBuilder: @unchecked Sendable {
   let http: any HTTPClientType
 
   struct MutableState {
-    var request: Helpers.HTTPRequest
+    var request: SBHTTPRequest
 
     /// The options for fetching data from the PostgREST server.
     var fetchOptions: FetchOptions
@@ -24,7 +23,7 @@ public class PostgrestBuilder: @unchecked Sendable {
 
   init(
     configuration: PostgrestClient.Configuration,
-    request: Helpers.HTTPRequest
+    request: SBHTTPRequest
   ) {
     self.configuration = configuration
 

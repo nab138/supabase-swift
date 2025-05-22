@@ -1,5 +1,5 @@
 import Foundation
-import Helpers
+
 
 /// Contains the full multi-factor authentication API.
 public struct AuthMFA: Sendable {
@@ -25,7 +25,7 @@ public struct AuthMFA: Sendable {
   /// - Returns: An authentication response after enrolling the factor.
   public func enroll(params: any MFAEnrollParamsType) async throws -> AuthMFAEnrollResponse {
     try await api.authorizedExecute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("factors"),
         method: .post,
         body: encoder.encode(params)
@@ -40,7 +40,7 @@ public struct AuthMFA: Sendable {
   /// - Returns: An authentication response with the challenge information.
   public func challenge(params: MFAChallengeParams) async throws -> AuthMFAChallengeResponse {
     try await api.authorizedExecute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("factors/\(params.factorId)/challenge"),
         method: .post,
         body: params.channel == nil ? nil : encoder.encode(["channel": params.channel])
@@ -57,7 +57,7 @@ public struct AuthMFA: Sendable {
   @discardableResult
   public func verify(params: MFAVerifyParams) async throws -> AuthMFAVerifyResponse {
     let response: AuthMFAVerifyResponse = try await api.authorizedExecute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("factors/\(params.factorId)/verify"),
         method: .post,
         body: encoder.encode(params)
@@ -79,7 +79,7 @@ public struct AuthMFA: Sendable {
   @discardableResult
   public func unenroll(params: MFAUnenrollParams) async throws -> AuthMFAUnenrollResponse {
     try await api.authorizedExecute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("factors/\(params.factorId)"),
         method: .delete
       )

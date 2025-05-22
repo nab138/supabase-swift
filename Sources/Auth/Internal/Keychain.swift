@@ -117,17 +117,17 @@
 
       var rawValue: OSStatus {
         switch self {
-        case .operationNotImplemented: errSecUnimplemented
-        case .invalidParameters: errSecParam
-        case .userCanceled: errSecUserCanceled
-        case .itemNotAvailable: errSecNotAvailable
-        case .authFailed: errSecAuthFailed
-        case .duplicateItem: errSecDuplicateItem
-        case .itemNotFound: errSecItemNotFound
-        case .interactionNotAllowed: errSecInteractionNotAllowed
-        case .decodeFailed: errSecDecode
-        case let .other(status): status
-        case .unknown: errSecSuccess // This is not a Keychain error
+        case .operationNotImplemented: return errSecUnimplemented
+        case .invalidParameters: return errSecParam
+        case .userCanceled: return errSecUserCanceled
+        case .itemNotAvailable: return errSecNotAvailable
+        case .authFailed: return errSecAuthFailed
+        case .duplicateItem: return errSecDuplicateItem
+        case .itemNotFound: return errSecItemNotFound
+        case .interactionNotAllowed: return errSecInteractionNotAllowed
+        case .decodeFailed: return errSecDecode
+        case let .other(status): return status
+        case .unknown: return errSecSuccess // This is not a Keychain error
         }
       }
     }
@@ -149,27 +149,27 @@
     var debugDescription: String {
       switch code {
       case .operationNotImplemented:
-        "errSecUnimplemented: A function or operation is not implemented."
+        return "errSecUnimplemented: A function or operation is not implemented."
       case .invalidParameters:
-        "errSecParam: One or more parameters passed to the function are not valid."
+        return "errSecParam: One or more parameters passed to the function are not valid."
       case .userCanceled:
-        "errSecUserCanceled: User canceled the operation."
+        return "errSecUserCanceled: User canceled the operation."
       case .itemNotAvailable:
-        "errSecNotAvailable: No trust results are available."
+        return "errSecNotAvailable: No trust results are available."
       case .authFailed:
-        "errSecAuthFailed: Authorization and/or authentication failed."
+        return "errSecAuthFailed: Authorization and/or authentication failed."
       case .duplicateItem:
-        "errSecDuplicateItem: The item already exists."
+        return "errSecDuplicateItem: The item already exists."
       case .itemNotFound:
-        "errSecItemNotFound: The item cannot be found."
+        return "errSecItemNotFound: The item cannot be found."
       case .interactionNotAllowed:
-        "errSecInteractionNotAllowed: Interaction with the Security Server is not allowed."
+        return "errSecInteractionNotAllowed: Interaction with the Security Server is not allowed."
       case .decodeFailed:
-        "errSecDecode: Unable to decode the provided data."
+        return "errSecDecode: Unable to decode the provided data."
       case .other:
-        "Unspecified Keychain error: \(status)."
+        return "Unspecified Keychain error: \(status)."
       case let .unknown(message):
-        "Unknown error: \(message)."
+        return "Unknown error: \(message)."
       }
     }
 

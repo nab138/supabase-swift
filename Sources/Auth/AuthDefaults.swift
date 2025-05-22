@@ -5,9 +5,9 @@
 //  Created by Guilherme Souza on 14/12/23.
 //
 
-import ConcurrencyExtras
+
 import Foundation
-import Helpers
+
 
 extension AuthClient.Configuration {
   /// The default JSONEncoder instance used by the ``AuthClient``.

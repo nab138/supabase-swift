@@ -18,11 +18,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import ConcurrencyExtras
+
 import Foundation
-import Helpers
+
 import Swift
-import HTTPTypes
 
 /// Container class of bindings to the channel
 struct Binding {
@@ -743,7 +742,7 @@ public class RealtimeChannel {
       ]
 
       do {
-        let request = try HTTPRequest(
+        let request = try SBHTTPRequest(
           url: broadcastEndpointURL,
           method: .post,
           headers: HTTPFields(headers.compactMapValues { $0 }),
@@ -915,12 +914,13 @@ public class RealtimeChannel {
 
     let handledMessage = message
 
-    let bindings: [Binding] = if ["insert", "update", "delete"].contains(typeLower) {
-      self.bindings.value["postgres_changes", default: []].filter { bind in
+    let bindings: [Binding]
+    if ["insert", "update", "delete"].contains(typeLower) {
+      bindings = self.bindings.value["postgres_changes", default: []].filter { bind in
         bind.filter["event"] == "*" || bind.filter["event"] == typeLower
       }
     } else {
-      self.bindings.value[typeLower, default: []].filter { bind in
+      bindings = self.bindings.value[typeLower, default: []].filter { bind in
         if ["broadcast", "presence", "postgres_changes"].contains(typeLower) {
           let bindEvent = bind.filter["event"]?.lowercased()
 

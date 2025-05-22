@@ -1,6 +1,6 @@
 import Foundation
-import HTTPTypes
-import Helpers
+
+
 
 /// An error type representing various errors that can occur while invoking functions.
 public enum FunctionsError: Error, LocalizedError {
@@ -13,9 +13,9 @@ public enum FunctionsError: Error, LocalizedError {
   public var errorDescription: String? {
     switch self {
     case .relayError:
-      "Relay Error invoking the Edge Function"
+      return "Relay Error invoking the Edge Function"
     case let .httpError(code, _):
-      "Edge Function returned a non-2xx status code: \(code)"
+      return "Edge Function returned a non-2xx status code: \(code)"
     }
   }
 }
@@ -99,20 +99,20 @@ public struct FunctionInvokeOptions: Sendable {
     case delete = "DELETE"
   }
 
-  static func httpMethod(_ method: Method?) -> HTTPTypes.HTTPRequest.Method? {
+  static func httpMethod(_ method: Method?) -> HTTPRequest.Method? {
     switch method {
     case .get:
-      .get
+      return HTTPRequest.Method.get
     case .post:
-      .post
+      return HTTPRequest.Method.post
     case .put:
-      .put
+      return HTTPRequest.Method.put
     case .patch:
-      .patch
+      return HTTPRequest.Method.patch
     case .delete:
-      .delete
+      return HTTPRequest.Method.delete
     case nil:
-      nil
+      return nil
     }
   }
 }

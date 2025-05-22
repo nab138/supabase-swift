@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import HTTPTypes
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -17,21 +17,21 @@ import HTTPTypes
 /// The `RetryRequestInterceptor` actor intercepts HTTP requests and automatically retries them in case
 /// of failure, with exponential backoff between retries. You can configure the retry behavior by specifying
 /// the retry limit, exponential backoff base, scale, retryable HTTP methods, HTTP status codes, and URL error codes.
-package actor RetryRequestInterceptor: HTTPClientInterceptor {
+actor RetryRequestInterceptor: HTTPClientInterceptor {
   /// The default retry limit for the interceptor.
-  package static let defaultRetryLimit = 2
+  static let defaultRetryLimit = 2
   /// The default base value for exponential backoff.
-  package static let defaultExponentialBackoffBase: UInt = 2
+  static let defaultExponentialBackoffBase: UInt = 2
   /// The default scale factor for exponential backoff.
-  package static let defaultExponentialBackoffScale: Double = 0.5
+  static let defaultExponentialBackoffScale: Double = 0.5
 
   /// The default set of retryable HTTP methods.
-  package static let defaultRetryableHTTPMethods: Set<HTTPTypes.HTTPRequest.Method> = [
+  static let defaultRetryableHTTPMethods: Set<HTTPRequest.Method> = [
     .delete, .get, .head, .options, .put, .trace,
   ]
 
   /// The default set of retryable URL error codes.
-  package static let defaultRetryableURLErrorCodes: Set<URLError.Code> = [
+  static let defaultRetryableURLErrorCodes: Set<URLError.Code> = [
     .backgroundSessionInUseByAnotherProcess, .backgroundSessionWasDisconnected,
     .badServerResponse, .callIsActive, .cannotConnectToHost, .cannotFindHost,
     .cannotLoadFromNetwork, .dataNotAllowed, .dnsLookupFailed,
@@ -42,22 +42,22 @@ package actor RetryRequestInterceptor: HTTPClientInterceptor {
   ]
 
   /// The default set of retryable HTTP status codes.
-  package static let defaultRetryableHTTPStatusCodes: Set<Int> = [
+  static let defaultRetryableHTTPStatusCodes: Set<Int> = [
     408, 500, 502, 503, 504,
   ]
 
   /// The maximum number of retries.
-  package let retryLimit: Int
+  let retryLimit: Int
   /// The base value for exponential backoff.
-  package let exponentialBackoffBase: UInt
+  let exponentialBackoffBase: UInt
   /// The scale factor for exponential backoff.
-  package let exponentialBackoffScale: Double
+  let exponentialBackoffScale: Double
   /// The set of retryable HTTP methods.
-  package let retryableHTTPMethods: Set<HTTPTypes.HTTPRequest.Method>
+  let retryableHTTPMethods: Set<HTTPRequest.Method>
   /// The set of retryable HTTP status codes.
-  package let retryableHTTPStatusCodes: Set<Int>
+  let retryableHTTPStatusCodes: Set<Int>
   /// The set of retryable URL error codes.
-  package let retryableErrorCodes: Set<URLError.Code>
+  let retryableErrorCodes: Set<URLError.Code>
 
   /// Creates a `RetryRequestInterceptor` instance.
   ///
@@ -68,11 +68,11 @@ package actor RetryRequestInterceptor: HTTPClientInterceptor {
   ///   - retryableHTTPMethods: The set of retryable HTTP methods. Default includes common methods.
   ///   - retryableHTTPStatusCodes: The set of retryable HTTP status codes. Default includes common status codes.
   ///   - retryableErrorCodes: The set of retryable URL error codes. Default includes common error codes.
-  package init(
+  init(
     retryLimit: Int = RetryRequestInterceptor.defaultRetryLimit,
     exponentialBackoffBase: UInt = RetryRequestInterceptor.defaultExponentialBackoffBase,
     exponentialBackoffScale: Double = RetryRequestInterceptor.defaultExponentialBackoffScale,
-    retryableHTTPMethods: Set<HTTPTypes.HTTPRequest.Method> = RetryRequestInterceptor
+    retryableHTTPMethods: Set<HTTPRequest.Method> = RetryRequestInterceptor
       .defaultRetryableHTTPMethods,
     retryableHTTPStatusCodes: Set<Int> = RetryRequestInterceptor.defaultRetryableHTTPStatusCodes,
     retryableErrorCodes: Set<URLError.Code> = RetryRequestInterceptor.defaultRetryableURLErrorCodes
@@ -96,14 +96,14 @@ package actor RetryRequestInterceptor: HTTPClientInterceptor {
   ///   - request: The original HTTP request to be intercepted and retried.
   ///   - next: A closure representing the next interceptor in the chain.
   /// - Returns: The HTTP response obtained after retrying.
-  package func intercept(
-    _ request: HTTPRequest,
-    next: @Sendable (HTTPRequest) async throws -> HTTPResponse
-  ) async throws -> HTTPResponse {
+  func intercept(
+    _ request: SBHTTPRequest,
+    next: @Sendable (SBHTTPRequest) async throws -> SBHTTPResponse
+  ) async throws -> SBHTTPResponse {
     try await retry(request, retryCount: 1, next: next)
   }
 
-  private func shouldRetry(request: HTTPRequest, result: Result<HTTPResponse, any Error>) -> Bool {
+  private func shouldRetry(request: SBHTTPRequest, result: Result<SBHTTPResponse, any Error>) -> Bool {
     guard retryableHTTPMethods.contains(request.method) else { return false }
 
     if let statusCode = result.value?.statusCode, retryableHTTPStatusCodes.contains(statusCode) {
@@ -118,11 +118,11 @@ package actor RetryRequestInterceptor: HTTPClientInterceptor {
   }
 
   private func retry(
-    _ request: HTTPRequest,
+    _ request: SBHTTPRequest,
     retryCount: Int,
-    next: @Sendable (HTTPRequest) async throws -> HTTPResponse
-  ) async throws -> HTTPResponse {
-    let result: Result<HTTPResponse, any Error>
+    next: @Sendable (SBHTTPRequest) async throws -> SBHTTPResponse
+  ) async throws -> SBHTTPResponse {
+    let result: Result<SBHTTPResponse, any Error>
 
     do {
       let response = try await next(request)

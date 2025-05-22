@@ -1,8 +1,4 @@
-import ConcurrencyExtras
 import Foundation
-import HTTPTypes
-import Helpers
-import IssueReporting
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -84,9 +80,6 @@ public final class RealtimeChannelV2: Sendable {
   public func subscribe() async {
     if socket.status != .connected {
       if socket.options.connectOnSubscribe != true {
-        reportIssue(
-          "You can't subscribe to a channel while the realtime client is not connected. Did you forget to call `realtime.connect()`?"
-        )
         return
       }
       await socket.connect()
@@ -185,7 +178,7 @@ public final class RealtimeChannelV2: Sendable {
 
       let task = Task { [headers] in
         _ = try? await socket.http.send(
-          HTTPRequest(
+          SBHTTPRequest(
             url: socket.broadcastURL,
             method: .post,
             headers: headers,
@@ -233,9 +226,6 @@ public final class RealtimeChannelV2: Sendable {
   /// - Parameter state: The state to be tracked as a `JSONObject`.
   public func track(state: JSONObject) async {
     if status != .subscribed {
-      reportIssue(
-        "You can only track your presence after subscribing to the channel. Did you forget to call `channel.subscribe()`?"
-      )
     }
 
     await push(
@@ -484,9 +474,6 @@ public final class RealtimeChannelV2: Sendable {
     callback: @escaping @Sendable (AnyAction) -> Void
   ) -> RealtimeSubscription {
     guard status != .subscribed else {
-      reportIssue(
-        "You cannot call postgresChange after joining the channel, this won't work as expected."
-      )
       return RealtimeSubscription {}
     }
 

@@ -1,27 +1,31 @@
 //
-//  HTTPRequest.swift
+//  SBHTTPRequest.swift
 //
 //
 //  Created by Guilherme Souza on 23/04/24.
 //
 
 import Foundation
-import HTTPTypes
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-package struct HTTPRequest: Sendable {
-  package var url: URL
-  package var method: HTTPTypes.HTTPRequest.Method
-  package var query: [URLQueryItem]
-  package var headers: HTTPFields
-  package var body: Data?
+struct SBHTTPRequest: Sendable {
+  var url: URL
+  var method: HTTPRequest.Method
+  var query: [URLQueryItem]
+  var headers: HTTPFields
+  var body: Data?
 
-  package init(
+  enum Method: String, Sendable {
+    case get, post, put, delete, patch, head, options, trace
+  }
+
+  init(
     url: URL,
-    method: HTTPTypes.HTTPRequest.Method,
+    method: HTTPRequest.Method,
     query: [URLQueryItem] = [],
     headers: HTTPFields = [:],
     body: Data? = nil
@@ -33,9 +37,9 @@ package struct HTTPRequest: Sendable {
     self.body = body
   }
 
-  package init?(
+  init?(
     urlString: String,
-    method: HTTPTypes.HTTPRequest.Method,
+    method: HTTPRequest.Method,
     query: [URLQueryItem] = [],
     headers: HTTPFields = [:],
     body: Data?
@@ -44,7 +48,7 @@ package struct HTTPRequest: Sendable {
     self.init(url: url, method: method, query: query, headers: headers, body: body)
   }
 
-  package var urlRequest: URLRequest {
+  var urlRequest: URLRequest {
     var urlRequest = URLRequest(url: query.isEmpty ? url : url.appendingQueryItems(query))
     urlRequest.httpMethod = method.rawValue
     urlRequest.allHTTPHeaderFields = .init(headers.map { ($0.name.rawName, $0.value) }) { $1 }
@@ -59,7 +63,7 @@ package struct HTTPRequest: Sendable {
 }
 
 extension [URLQueryItem] {
-  package mutating func appendOrUpdate(_ queryItem: URLQueryItem) {
+  mutating func appendOrUpdate(_ queryItem: URLQueryItem) {
     if let index = firstIndex(where: { $0.name == queryItem.name }) {
       self[index] = queryItem
     } else {

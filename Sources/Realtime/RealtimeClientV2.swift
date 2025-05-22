@@ -5,15 +5,13 @@
 //  Created by Guilherme Souza on 26/12/23.
 //
 
-import ConcurrencyExtras
+
 import Foundation
-import Helpers
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-
-public typealias JSONObject = Helpers.JSONObject
 
 /// Factory function for returning a new WebSocket connection.
 typealias WebSocketTransport = @Sendable (_ url: URL, _ headers: [String: String]) async throws ->

@@ -1,21 +1,8 @@
-@_exported import Auth
-import ConcurrencyExtras
 import Foundation
-@_exported import Functions
-import HTTPTypes
-import Helpers
-import IssueReporting
-@_exported import PostgREST
-@_exported import Realtime
-@_exported import Storage
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-
-public typealias SupabaseLogger = Helpers.SupabaseLogger
-public typealias SupabaseLogLevel = Helpers.SupabaseLogLevel
-public typealias SupabaseLogMessage = Helpers.SupabaseLogMessage
 
 /// Supabase Client.
 public final class SupabaseClient: Sendable {
@@ -30,13 +17,6 @@ public final class SupabaseClient: Sendable {
 
   /// Supabase Auth allows you to create and manage user sessions for access to data that is secured by access policies.
   public var auth: AuthClient {
-    if options.auth.accessToken != nil {
-      reportIssue(
-        """
-        Supabase Client is configured with the auth.accessToken option,
-        accessing supabase.auth is not possible.
-        """)
-    }
     return _auth
   }
 
@@ -58,23 +38,6 @@ public final class SupabaseClient: Sendable {
     }
   }
 
-  /// Supabase Storage allows you to manage user-generated content, such as photos or videos.
-  public var storage: SupabaseStorageClient {
-    mutableState.withValue {
-      if $0.storage == nil {
-        $0.storage = SupabaseStorageClient(
-          configuration: StorageClientConfiguration(
-            url: storageURL,
-            headers: headers,
-            session: StorageHTTPSession(fetch: fetchWithAuth, upload: uploadWithAuth),
-            logger: options.global.logger
-          )
-        )
-      }
-
-      return $0.storage!
-    }
-  }
 
   let _realtime: UncheckedSendable<RealtimeClient>
 
@@ -115,7 +78,6 @@ public final class SupabaseClient: Sendable {
 
   struct MutableState {
     var listenForAuthEventsTask: Task<Void, Never>?
-    var storage: SupabaseStorageClient?
     var rest: PostgrestClient?
     var functions: FunctionsClient?
     var realtime: RealtimeClientV2?
@@ -361,9 +323,9 @@ public final class SupabaseClient: Sendable {
 
   private func _getAccessToken() async throws -> String? {
     if let accessToken = options.auth.accessToken {
-      try await accessToken()
+      return try await accessToken()
     } else {
-      try await auth.session.accessToken
+      return try await auth.session.accessToken
     }
   }
 
@@ -411,15 +373,6 @@ public final class SupabaseClient: Sendable {
       realtimeOptions.accessToken = { [weak self] in
         try await self?._getAccessToken()
       }
-    } else {
-      reportIssue(
-        """
-        You assigned a custom `accessToken` closure to the RealtimeClientV2. This might not work as you expect
-        as SupabaseClient uses Auth for pulling an access token to send on the realtime channels.
-
-        Please make sure you know what you're doing.
-        """
-      )
     }
 
     return RealtimeClientV2(

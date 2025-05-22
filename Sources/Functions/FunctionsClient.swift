@@ -1,13 +1,8 @@
-import ConcurrencyExtras
 import Foundation
-import HTTPTypes
-import Helpers
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
-
-let version = Helpers.version
 
 /// An actor representing a client for invoking functions.
 public final class FunctionsClient: Sendable {
@@ -187,7 +182,7 @@ public final class FunctionsClient: Sendable {
   private func rawInvoke(
     functionName: String,
     invokeOptions: FunctionInvokeOptions
-  ) async throws -> Helpers.HTTPResponse {
+  ) async throws -> SBHTTPResponse {
     let request = buildRequest(functionName: functionName, options: invokeOptions)
     let response = try await http.send(request)
 
@@ -218,7 +213,8 @@ public final class FunctionsClient: Sendable {
     _ functionName: String,
     options invokeOptions: FunctionInvokeOptions = .init()
   ) -> AsyncThrowingStream<Data, any Error> {
-    let (stream, continuation) = AsyncThrowingStream<Data, any Error>.makeStream()
+    var continuation: AsyncThrowingStream<Data, any Error>.Continuation!
+    let stream = AsyncThrowingStream<Data, any Error> { c in continuation = c }
     let delegate = StreamResponseDelegate(continuation: continuation)
 
     let session = URLSession(
@@ -229,9 +225,8 @@ public final class FunctionsClient: Sendable {
     let task = session.dataTask(with: urlRequest)
     task.resume()
 
-    continuation.onTermination = { _ in
+    continuation.onTermination = { @Sendable _ in
       task.cancel()
-
       // Hold a strong reference to delegate until continuation terminates.
       _ = delegate
     }
@@ -240,9 +235,9 @@ public final class FunctionsClient: Sendable {
   }
 
   private func buildRequest(functionName: String, options: FunctionInvokeOptions)
-    -> Helpers.HTTPRequest
+    -> SBHTTPRequest
   {
-    var request = HTTPRequest(
+    var request = SBHTTPRequest(
       url: url.appendingPathComponent(functionName),
       method: FunctionInvokeOptions.httpMethod(options.method) ?? .post,
       query: options.query,

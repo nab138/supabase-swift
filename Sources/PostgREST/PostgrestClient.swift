@@ -1,11 +1,6 @@
-import ConcurrencyExtras
 import Foundation
-import HTTPTypes
-import Helpers
 
-public typealias PostgrestError = Helpers.PostgrestError
-public typealias HTTPError = Helpers.HTTPError
-public typealias AnyJSON = Helpers.AnyJSON
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -139,7 +134,7 @@ public final class PostgrestClient: Sendable {
     get: Bool = false,
     count: CountOption? = nil
   ) throws -> PostgrestFilterBuilder {
-    let method: HTTPTypes.HTTPRequest.Method
+    let method: HTTPRequest.Method
     var url = configuration.url.appendingPathComponent("rpc/\(fn)")
     let bodyData = try configuration.encoder.encode(params)
     var body: Data?
@@ -162,7 +157,7 @@ public final class PostgrestClient: Sendable {
       body = bodyData
     }
 
-    var request = HTTPRequest(
+    var request = SBHTTPRequest(
       url: url,
       method: method,
       headers: HTTPFields(configuration.headers),
@@ -170,7 +165,7 @@ public final class PostgrestClient: Sendable {
     )
 
     if let count {
-      request.headers[.prefer] = "count=\(count.rawValue)"
+      request.headers[HTTPField.Name.prefer] = "count=\(count.rawValue)"
     }
 
     return PostgrestFilterBuilder(

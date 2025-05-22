@@ -5,12 +5,12 @@
 //  Created by Guilherme Souza on 20/01/25.
 //
 
-import ConcurrencyExtras
+
 import Foundation
 
 extension JSONDecoder {
   /// Default `JSONDecoder` for decoding types from Supabase.
-  package static func supabase() -> JSONDecoder {
+  static func supabase() -> JSONDecoder {
     let decoder = JSONDecoder()
     decoder.dateDecodingStrategy = .custom { decoder in
       let container = try decoder.singleValueContainer()
@@ -29,7 +29,7 @@ extension JSONDecoder {
 }
 extension JSONEncoder {
   /// Default `JSONEncoder` for encoding types to Supabase.
-  package static func supabase() -> JSONEncoder {
+  static func supabase() -> JSONEncoder {
     let encoder = JSONEncoder()
     encoder.dateEncodingStrategy = .custom { date, encoder in
       var container = encoder.singleValueContainer()

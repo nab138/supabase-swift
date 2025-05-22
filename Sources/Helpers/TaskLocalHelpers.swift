@@ -10,7 +10,7 @@ import Foundation
 #if compiler(>=6.0)
   extension TaskLocal where Value == JSONObject {
     @discardableResult
-    @inlinable package final func withValue<R>(
+    @inlinable final func withValue<R>(
       merging valueDuringOperation: Value,
       operation: () async throws -> R,
       isolation: isolated (any Actor)? = #isolation,
@@ -31,7 +31,7 @@ import Foundation
   extension TaskLocal where Value == JSONObject {
     @_unsafeInheritExecutor
     @discardableResult
-    @inlinable package final func withValue<R>(
+    @inlinable final func withValue<R>(
       merging valueDuringOperation: Value,
       operation: () async throws -> R,
       file: String = #fileID,

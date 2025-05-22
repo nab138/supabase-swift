@@ -8,22 +8,22 @@ public enum SupabaseLogLevel: Int, Codable, CustomStringConvertible, Sendable {
 
   public var description: String {
     switch self {
-    case .verbose: "verbose"
-    case .debug: "debug"
-    case .warning: "warning"
-    case .error: "error"
+    case .verbose: return "verbose"
+    case .debug: return "debug"
+    case .warning: return "warning"
+    case .error: return "error"
     }
   }
 }
 
 @usableFromInline
-package enum SupabaseLoggerTaskLocal {
+enum SupabaseLoggerTaskLocal {
   @TaskLocal
   @usableFromInline
-  package static var additionalContext: JSONObject = [:]
+  static var additionalContext: JSONObject = [:]
 }
 
-public struct SupabaseLogMessage: Codable, CustomStringConvertible, Sendable {
+public struct SupabaseLogMessage: CustomStringConvertible, Sendable {
   public let system: String
   public let level: SupabaseLogLevel
   public let message: String
@@ -107,7 +107,7 @@ extension SupabaseLogger {
     additionalContext: JSONObject = [:]
   ) {
     log(
-      .verbose,
+      SupabaseLogLevel.verbose,
       message: message(),
       fileID: fileID,
       function: function,
@@ -125,7 +125,7 @@ extension SupabaseLogger {
     additionalContext: JSONObject = [:]
   ) {
     log(
-      .debug,
+      SupabaseLogLevel.debug,
       message: message(),
       fileID: fileID,
       function: function,
@@ -143,7 +143,7 @@ extension SupabaseLogger {
     additionalContext: JSONObject = [:]
   ) {
     log(
-      .warning,
+      SupabaseLogLevel.warning,
       message: message(),
       fileID: fileID,
       function: function,
@@ -161,7 +161,7 @@ extension SupabaseLogger {
     additionalContext: JSONObject = [:]
   ) {
     log(
-      .error,
+      SupabaseLogLevel.error,
       message: message(),
       fileID: fileID,
       function: function,
@@ -174,7 +174,7 @@ extension SupabaseLogger {
 #if compiler(>=6.0)
   @inlinable
   @discardableResult
-  package func trace<R: Sendable>(
+  func trace<R: Sendable>(
     using logger: (any SupabaseLogger)?,
     _ operation: () async throws -> R,
     isolation _: isolated (any Actor)? = #isolation,
@@ -196,7 +196,7 @@ extension SupabaseLogger {
   @_unsafeInheritExecutor
   @inlinable
   @discardableResult
-  package func trace<R: Sendable>(
+  func trace<R: Sendable>(
     using logger: (any SupabaseLogger)?,
     _ operation: () async throws -> R,
     fileID: StaticString = #fileID,

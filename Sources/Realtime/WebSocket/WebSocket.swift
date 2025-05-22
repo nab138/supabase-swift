@@ -14,7 +14,7 @@ enum WebSocketError: Error, LocalizedError {
 
   var errorDescription: String? {
     switch self {
-    case .connection(let message, let error): "\(message) \(error.localizedDescription)"
+    case .connection(let message, let error): return "\(message) \(error.localizedDescription)"
     }
   }
 }
@@ -73,18 +73,13 @@ extension WebSocket {
   ///
   /// Errors will never appear in this `AsyncStream`.
   var events: AsyncStream<WebSocketEvent> {
-    let (stream, continuation) = AsyncStream<WebSocketEvent>.makeStream()
-    self.onEvent = { event in
-      continuation.yield(event)
-
-      if case .close = event {
-        continuation.finish()
+    AsyncStream<WebSocketEvent> { continuation in
+      self.onEvent = { event in
+        continuation.yield(event)
+        if case .close = event {
+          continuation.finish()
+        }
       }
     }
-
-    continuation.onTermination = { _ in
-      self.onEvent = nil
-    }
-    return stream
   }
 }

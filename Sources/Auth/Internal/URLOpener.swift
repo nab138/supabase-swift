@@ -28,7 +28,7 @@ extension URLOpener {
     URLOpener { url in
       #if os(macOS)
         NSWorkspace.shared.open(url)
-      #elseif os(iOS) || os(tvOS) || os(visionOS) || targetEnvironment(macCatalyst)
+      #elseif os(iOS) || os(tvOS) || targetEnvironment(macCatalyst)
         UIApplication.shared.open(url)
       #elseif os(watchOS)
         WKExtension.shared().openSystemURL(url)

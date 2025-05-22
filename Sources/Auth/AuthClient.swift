@@ -1,6 +1,5 @@
-import ConcurrencyExtras
 import Foundation
-import Helpers
+
 
 #if canImport(AuthenticationServices)
   import AuthenticationServices
@@ -214,24 +213,17 @@ public actor AuthClient {
       )
     >
   {
-    let (stream, continuation) = AsyncStream<
-      (
-        event: AuthChangeEvent,
-        session: Session?
-      )
-    >.makeStream()
+    AsyncStream { continuation in
+      Task {
+        let handle = await onAuthStateChange { event, session in
+          continuation.yield((event, session))
+        }
 
-    Task {
-      let handle = await onAuthStateChange { event, session in
-        continuation.yield((event, session))
-      }
-
-      continuation.onTermination = { _ in
-        handle.remove()
+        continuation.onTermination = { _ in
+          handle.remove()
+        }
       }
     }
-
-    return stream
   }
 
   /// Creates a new user.
@@ -309,7 +301,7 @@ public actor AuthClient {
     )
   }
 
-  private func _signUp(request: HTTPRequest) async throws -> AuthResponse {
+  private func _signUp(request: SBHTTPRequest) async throws -> AuthResponse {
     let response = try await api.execute(request).decoded(
       as: AuthResponse.self,
       decoder: configuration.decoder
@@ -403,7 +395,7 @@ public actor AuthClient {
     captchaToken: String? = nil
   ) async throws -> Session {
     try await _signIn(
-      request: HTTPRequest(
+      request: SBHTTPRequest(
         url: configuration.url.appendingPathComponent("signup"),
         method: .post,
         body: configuration.encoder.encode(
@@ -416,7 +408,7 @@ public actor AuthClient {
     )
   }
 
-  private func _signIn(request: HTTPRequest) async throws -> Session {
+  private func _signIn(request: SBHTTPRequest) async throws -> Session {
     let session = try await api.execute(request).decoded(
       as: Session.self,
       decoder: configuration.decoder
@@ -522,7 +514,7 @@ public actor AuthClient {
     let (codeChallenge, codeChallengeMethod) = prepareForPKCE()
 
     return try await api.execute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("sso"),
         method: .post,
         body: configuration.encoder.encode(
@@ -555,7 +547,7 @@ public actor AuthClient {
     let (codeChallenge, codeChallengeMethod) = prepareForPKCE()
 
     return try await api.execute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("sso"),
         method: .post,
         body: configuration.encoder.encode(
@@ -1039,7 +1031,7 @@ public actor AuthClient {
     )
   }
 
-  private func _verifyOTP(request: HTTPRequest) async throws -> AuthResponse {
+  private func _verifyOTP(request: SBHTTPRequest) async throws -> AuthResponse {
     let response = try await api.execute(request).decoded(
       as: AuthResponse.self,
       decoder: configuration.decoder
@@ -1064,7 +1056,7 @@ public actor AuthClient {
     captchaToken: String? = nil
   ) async throws {
     _ = try await api.execute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("resend"),
         method: .post,
         query: [
@@ -1099,7 +1091,7 @@ public actor AuthClient {
     captchaToken: String? = nil
   ) async throws -> ResendMobileResponse {
     try await api.execute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("resend"),
         method: .post,
         body: configuration.encoder.encode(
@@ -1117,7 +1109,7 @@ public actor AuthClient {
   /// Sends a re-authentication OTP to the user's email or phone number.
   public func reauthenticate() async throws {
     try await api.authorizedExecute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("reauthenticate"),
         method: .get
       )
@@ -1130,7 +1122,7 @@ public actor AuthClient {
   ///
   /// Should be used only when you require the most current user data. For faster results, ``currentUser`` is recommended.
   public func user(jwt: String? = nil) async throws -> User {
-    var request = HTTPRequest(url: configuration.url.appendingPathComponent("user"), method: .get)
+    var request = SBHTTPRequest(url: configuration.url.appendingPathComponent("user"), method: .get)
 
     if let jwt {
       request.headers[.authorization] = "Bearer \(jwt)"
@@ -1260,7 +1252,7 @@ public actor AuthClient {
     }
 
     let response = try await api.authorizedExecute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: url,
         method: .get
       )
@@ -1274,7 +1266,7 @@ public actor AuthClient {
   /// with that identity once it's unlinked.
   public func unlinkIdentity(_ identity: UserIdentity) async throws {
     try await api.authorizedExecute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("user/identities/\(identity.identityId)"),
         method: .delete
       )

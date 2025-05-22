@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import Helpers
 
-public struct PresenceV2: Hashable, Sendable {
+
+public struct PresenceV2: Sendable {
   /// The presence reference of the object.
   public let ref: String
 

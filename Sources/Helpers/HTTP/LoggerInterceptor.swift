@@ -7,17 +7,17 @@
 
 import Foundation
 
-package struct LoggerInterceptor: HTTPClientInterceptor {
+struct LoggerInterceptor: HTTPClientInterceptor {
   let logger: any SupabaseLogger
 
-  package init(logger: any SupabaseLogger) {
+  init(logger: any SupabaseLogger) {
     self.logger = logger
   }
 
-  package func intercept(
-    _ request: HTTPRequest,
-    next: @Sendable (HTTPRequest) async throws -> HTTPResponse
-  ) async throws -> HTTPResponse {
+  func intercept(
+    _ request: SBHTTPRequest,
+    next: @Sendable (SBHTTPRequest) async throws -> SBHTTPResponse
+  ) async throws -> SBHTTPResponse {
     let id = UUID().uuidString
     return try await SupabaseLoggerTaskLocal.$additionalContext.withValue(merging: ["requestID": .string(id)]) {
       let urlRequest = request.urlRequest

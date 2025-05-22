@@ -6,20 +6,20 @@
 //
 
 import Foundation
-import HTTPTypes
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
 #endif
 
-package struct HTTPResponse: Sendable {
-  package let data: Data
-  package let headers: HTTPFields
-  package let statusCode: Int
+struct SBHTTPResponse: Sendable {
+  let data: Data
+  let headers: HTTPFields
+  let statusCode: Int
 
-  package let underlyingResponse: HTTPURLResponse
+  let underlyingResponse: HTTPURLResponse
 
-  package init(data: Data, response: HTTPURLResponse) {
+  init(data: Data, response: HTTPURLResponse) {
     self.data = data
     headers = HTTPFields(response.allHeaderFields as? [String: String] ?? [:])
     statusCode = response.statusCode
@@ -27,8 +27,8 @@ package struct HTTPResponse: Sendable {
   }
 }
 
-extension HTTPResponse {
-  package func decoded<T: Decodable>(as _: T.Type = T.self, decoder: JSONDecoder = JSONDecoder()) throws -> T {
+extension SBHTTPResponse {
+  func decoded<T: Decodable>(as _: T.Type = T.self, decoder: JSONDecoder = JSONDecoder()) throws -> T {
     try decoder.decode(T.self, from: data)
   }
 }

@@ -1,6 +1,5 @@
-import ConcurrencyExtras
 import Foundation
-import Helpers
+
 
 final class CallbackManager: Sendable {
   struct MutableState {
@@ -199,10 +198,10 @@ enum RealtimeCallback {
 
   var id: Int {
     switch self {
-    case let .postgres(callback): callback.id
-    case let .broadcast(callback): callback.id
-    case let .presence(callback): callback.id
-    case let .system(callback): callback.id
+    case let .postgres(callback): return callback.id
+    case let .broadcast(callback): return callback.id
+    case let .presence(callback): return callback.id
+    case let .system(callback): return callback.id
     }
   }
 }

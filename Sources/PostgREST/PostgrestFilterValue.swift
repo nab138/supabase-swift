@@ -1,5 +1,5 @@
 import Foundation
-import Helpers
+
 
 /// A value that can be used to filter Postgrest queries.
 public protocol PostgrestFilterValue {
@@ -11,50 +11,34 @@ extension PostgrestFilterValue {
   public var queryValue: String { rawValue }
 }
 
-extension String: PostgrestFilterValue {
-  public var rawValue: String { self }
-}
+extension String: PostgrestFilterValue {}
 
-extension Int: PostgrestFilterValue {
-  public var rawValue: String { "\(self)" }
-}
+extension Int: PostgrestFilterValue {}
 
-extension Double: PostgrestFilterValue {
-  public var rawValue: String { "\(self)" }
-}
+extension Double: PostgrestFilterValue {}
 
-extension Bool: PostgrestFilterValue {
-  public var rawValue: String { "\(self)" }
-}
+extension Bool: PostgrestFilterValue {}
 
-extension UUID: PostgrestFilterValue {
-  public var rawValue: String { uuidString }
-}
+extension UUID: PostgrestFilterValue {}
 
-extension Date: PostgrestFilterValue {
-  public var rawValue: String {
-    let formatter = ISO8601DateFormatter()
-    formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-    return formatter.string(from: self)
-  }
-}
+extension Date: PostgrestFilterValue {}
 
 extension Array: PostgrestFilterValue where Element: PostgrestFilterValue {
   public var rawValue: String {
-    "{\(map(\.rawValue).joined(separator: ","))}"
+    return "{\(map(\.rawValue).joined(separator: ","))}"
   }
 }
 
 extension AnyJSON: PostgrestFilterValue {
   public var rawValue: String {
     switch self {
-    case let .array(array): array.rawValue
-    case let .object(object): object.rawValue
-    case let .string(string): string.rawValue
-    case let .double(double): double.rawValue
-    case let .integer(integer): integer.rawValue
-    case let .bool(bool): bool.rawValue
-    case .null: "NULL"
+    case let .array(array): return array.rawValue
+    case let .object(object): return object.rawValue
+    case let .string(string): return string.rawValue
+    case let .double(double): return double.rawValue
+    case let .integer(integer): return integer.rawValue
+    case let .bool(bool): return bool.rawValue
+    case .null: return "NULL"
     }
   }
 }

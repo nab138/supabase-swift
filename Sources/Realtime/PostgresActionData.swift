@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import Helpers
 
-struct PostgresActionData: Codable {
+
+struct PostgresActionData: Decodable {
   var type: String
   var record: [String: AnyJSON]?
   var oldRecord: [String: AnyJSON]?

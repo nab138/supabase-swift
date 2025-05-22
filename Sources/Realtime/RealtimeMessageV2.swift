@@ -1,7 +1,7 @@
 import Foundation
-import Helpers
 
-public struct RealtimeMessageV2: Hashable, Codable, Sendable {
+
+public struct RealtimeMessageV2: Codable, Sendable {
   public let joinRef: String?
   public let ref: String?
   public let topic: String
@@ -31,23 +31,24 @@ public struct RealtimeMessageV2: Hashable, Codable, Sendable {
 
   var _eventType: EventType? {
     switch event {
-    case ChannelEvent.system: .system
+    case ChannelEvent.system:
+      return .system
     case ChannelEvent.postgresChanges:
-      .postgresChanges
+      return .postgresChanges
     case ChannelEvent.broadcast:
-      .broadcast
+      return .broadcast
     case ChannelEvent.close:
-      .close
+      return .close
     case ChannelEvent.error:
-      .error
+      return .error
     case ChannelEvent.presenceDiff:
-      .presenceDiff
+      return .presenceDiff
     case ChannelEvent.presenceState:
-      .presenceState
+      return .presenceState
     case ChannelEvent.reply:
-      .reply
+      return .reply
     default:
-      nil
+      return nil
     }
   }
 

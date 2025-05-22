@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import Helpers
-import HTTPTypes
+
+
 
 public struct AuthAdmin: Sendable {
   let clientID: AuthClientID
@@ -25,7 +25,7 @@ public struct AuthAdmin: Sendable {
   /// - Warning: Never expose your `service_role` key on the client.
   public func deleteUser(id: String, shouldSoftDelete: Bool = false) async throws {
     _ = try await api.execute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("admin/users/\(id)"),
         method: .delete,
         body: encoder.encode(
@@ -47,9 +47,9 @@ public struct AuthAdmin: Sendable {
     }
 
     let httpResponse = try await api.execute(
-      HTTPRequest(
+      SBHTTPRequest(
         url: configuration.url.appendingPathComponent("admin/users"),
-        method: .get,
+        method: HTTPRequest.Method.get,
         query: [
           URLQueryItem(name: "page", value: params?.page?.description ?? ""),
           URLQueryItem(name: "per_page", value: params?.perPage?.description ?? ""),

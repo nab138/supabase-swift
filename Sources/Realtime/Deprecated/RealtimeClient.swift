@@ -18,9 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import ConcurrencyExtras
 import Foundation
-import Helpers
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -274,9 +273,9 @@ public class RealtimeClient: PhoenixTransportDelegate {
   /// - return: The socket protocol, wss or ws
   public var websocketProtocol: String {
     switch endPointUrl.scheme {
-    case "https": "wss"
-    case "http": "ws"
-    default: endPointUrl.scheme ?? ""
+    case "https": return "wss"
+    case "http": return "ws"
+    default: return endPointUrl.scheme ?? ""
     }
   }
 
@@ -1063,9 +1062,9 @@ extension RealtimeClient {
     var shouldReconnect: Bool {
       switch self {
       case .unknown, .abnormal:
-        true
+        return true
       case .clean, .temporary:
-        false
+        return false
       }
     }
   }

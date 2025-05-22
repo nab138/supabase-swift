@@ -1,5 +1,5 @@
 import Foundation
-import Helpers
+
 
 #if canImport(FoundationNetworking)
   import FoundationNetworking
@@ -115,7 +115,7 @@ extension ErrorCode {
   //#nosec G101 -- Not a secret value.
   public static let invalidCredentials = ErrorCode("invalid_credentials")
   public static let emailAddressNotAuthorized = ErrorCode("email_address_not_authorized")
-}
+} // end of extension ErrorCode
 
 public enum AuthError: LocalizedError, Equatable {
   @available(
@@ -147,9 +147,9 @@ public enum AuthError: LocalizedError, Equatable {
   public static func pkce(_ reason: PKCEFailureReason) -> AuthError {
     switch reason {
     case .codeVerifierNotFound:
-      .pkceGrantCodeExchange(message: "A code verifier wasn't found in PKCE flow.")
+      return AuthError.pkceGrantCodeExchange(message: "A code verifier wasn't found in PKCE flow.")
     case .invalidPKCEFlowURL:
-      .pkceGrantCodeExchange(message: "Not a valid PKCE flow url.")
+      return AuthError.pkceGrantCodeExchange(message: "Not a valid PKCE flow url.")
     }
   }
 
@@ -160,11 +160,11 @@ public enum AuthError: LocalizedError, Equatable {
 
     /// Not a valid PKCE flow URL.
     case invalidPKCEFlowURL
-  }
+  } // end of enum PKCEFailureReason
 
   @available(*, deprecated, renamed: "implicitGrantRedirect")
   public static var invalidImplicitGrantFlowURL: AuthError {
-    .implicitGrantRedirect(message: "Not a valid implicit grant flow url.")
+    return AuthError.implicitGrantRedirect(message: "Not a valid implicit grant flow url.")
   }
 
   @available(
@@ -191,12 +191,12 @@ public enum AuthError: LocalizedError, Equatable {
   public static func api(_ error: APIError) -> AuthError {
     let message = error.msg ?? error.error ?? error.errorDescription ?? "Unexpected API error."
     if let weakPassword = error.weakPassword {
-      return .weakPassword(message: message, reasons: weakPassword.reasons)
+      return AuthError.weakPassword(message: message, reasons: weakPassword.reasons)
     }
 
-    return .api(
+    return AuthError.api(
       message: message,
-      errorCode: .unknown,
+      errorCode: ErrorCode.unknown,
       underlyingData: (try? AuthClient.Configuration.jsonEncoder.encode(error)) ?? Data(),
       underlyingResponse: HTTPURLResponse(
         url: defaultAuthURL,
@@ -239,7 +239,7 @@ public enum AuthError: LocalizedError, Equatable {
     /// Only returned when signing up if the password used is too weak. Inspect the
     /// ``WeakPassword/reasons`` and ``AuthError/APIError/msg`` property to identify the causes.
     public var weakPassword: WeakPassword?
-  }
+  } // end of struct APIError
 
   /// Error thrown when a session is required to proceed, but none was found, either thrown by the client, or returned by the server.
   case sessionMissing
@@ -264,28 +264,27 @@ public enum AuthError: LocalizedError, Equatable {
 
   public var message: String {
     switch self {
-    case .sessionMissing: "Auth session missing."
-    case let .weakPassword(message, _),
-      let .api(message, _, _, _),
-      let .pkceGrantCodeExchange(message, _, _),
-      let .implicitGrantRedirect(message):
-      message
+    case .sessionMissing: return "Auth session missing."
+    case let .weakPassword(message, _): return message
+    case let .api(message, _, _, _): return message
+    case let .pkceGrantCodeExchange(message, _, _): return message
+    case let .implicitGrantRedirect(message): return message
     // Deprecated cases
-    case .missingExpClaim: "Missing expiration claim in the access token."
-    case .malformedJWT: "A malformed JWT received."
-    case .invalidRedirectScheme: "Invalid redirect scheme."
-    case .missingURL: "Missing URL."
+    case .missingExpClaim: return "Missing expiration claim in the access token."
+    case .malformedJWT: return "A malformed JWT received."
+    case .invalidRedirectScheme: return "Invalid redirect scheme."
+    case .missingURL: return "Missing URL."
     }
   }
 
   public var errorCode: ErrorCode {
     switch self {
-    case .sessionMissing: .sessionNotFound
-    case .weakPassword: .weakPassword
-    case let .api(_, errorCode, _, _): errorCode
-    case .pkceGrantCodeExchange, .implicitGrantRedirect: .unknown
+    case .sessionMissing: return ErrorCode.sessionNotFound
+    case .weakPassword: return ErrorCode.weakPassword
+    case let .api(_, errorCode, _, _): return errorCode
+    case .pkceGrantCodeExchange, .implicitGrantRedirect: return ErrorCode.unknown
     // Deprecated cases
-    case .missingExpClaim, .malformedJWT, .invalidRedirectScheme, .missingURL: .unknown
+    case .missingExpClaim, .malformedJWT, .invalidRedirectScheme, .missingURL: return ErrorCode.unknown
     }
   }
 
@@ -297,4 +296,4 @@ public enum AuthError: LocalizedError, Equatable {
     guard let rhs = rhs as? AuthError else { return false }
     return lhs == rhs
   }
-}
+} // end of enum AuthError
